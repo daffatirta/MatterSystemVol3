@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matter System - Personal Strategic Life Operating System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">◇</span>
+                <h1>Matter System</h1>
+                <span class="version-badge">v100</span>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-section">BAGIAN 1 · v1–v10</div>
+                <button class="nav-item active" data-view="dashboard">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </button>
+                <button class="nav-item" data-view="discipline-log">
+                    <span class="nav-icon">✓</span>
+                    Log Disiplin
+                </button>
+                <button class="nav-item" data-view="interrogation">
+                    <span class="nav-icon">⚡</span>
+                    Ruang Interogasi
+                </button>
+                <button class="nav-item" data-view="charts">
+                    <span class="nav-icon">📈</span>
+                    Grafik
+                </button>
+                <button class="nav-item" data-view="history">
+                    <span class="nav-icon">📜</span>
+                    Histori
+                </button>
+                <div class="nav-section">BAGIAN 2 · v11–v20</div>
+                <button class="nav-item" data-view="part2">
+                    <span class="nav-icon">🔬</span>
+                    Analisis Disiplin
+                </button>
+                <div class="nav-section">BAGIAN 3 · v21–v30</div>
+                <button class="nav-item" data-view="part3">
+                    <span class="nav-icon">⚙</span>
+                    Koreksi Struktur
+                </button>
+                <div class="nav-section">BAGIAN 4 · v31–v40</div>
+                <button class="nav-item" data-view="part4">
+                    <span class="nav-icon">📦</span>
+                    Pengembangan Kapasitas
+                </button>
+                <div class="nav-section">BAGIAN 5 · v41–v50</div>
+                <button class="nav-item" data-view="part5">
+                    <span class="nav-icon">🎯</span>
+                    Strategi Kehidupan
+                </button>
+                <div class="nav-section">BAGIAN 6 · v51–v60</div>
+                <button class="nav-item" data-view="part6">
+                    <span class="nav-icon">🔮</span>
+                    Prediksi Masa Depan
+                </button>
+                <div class="nav-section">BAGIAN 7 · v61–v70</div>
+                <button class="nav-item" data-view="part7">
+                    <span class="nav-icon">📖</span>
+                    Ekspansi Kapasitas
+                </button>
+                <div class="nav-section">BAGIAN 8 · v71–v80</div>
+                <button class="nav-item" data-view="part8">
+                    <span class="nav-icon">🏛</span>
+                    Optimalisasi Kehidupan
+                </button>
+                <div class="nav-section">BAGIAN 9 · v81–v90</div>
+                <button class="nav-item" data-view="part9">
+                    <span class="nav-icon">👑</span>
+                    Kepemimpinan Pribadi
+                </button>
+                <div class="nav-section">BAGIAN 10 · v91–v100</div>
+                <button class="nav-item" data-view="part10">
+                    <span class="nav-icon">Ω</span>
+                    Final Omega
+                <div class="nav-section">ECONOMY</div>
+                <button class="nav-item" data-view="economy">
+                    <span class="nav-icon">💰</span>
+                    Keuangan
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="authority-status" id="authority-status">—</div>
+                <button class="theme-toggle">
+                    <span class="theme-icon">🌙</span>
+                    <span class="theme-text">Dark Mode</span>
+                </button>
+                <div class="date-display" id="current-date"></div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard -->
+            <section id="view-dashboard" class="view active">
+                <div class="view-header">
+                    <h2>Command Center</h2>
+                    <p class="subtitle">Sistem Dasar Pelacak Disiplin · Matter System v1–v10</p>
+                </div>
+                <div class="authority-badge-container" id="authority-badge"></div>
+                <div class="three-pillars">
+                    <h3>Tiga Pilar Disiplin Hari Ini</h3>
+                    <div class="pillars-grid">
+                        <div class="pillar-card">
+                            <div class="pillar-header">
+                                <span class="pillar-icon">📚</span>
+                                <h4>Cognitive Intake</h4>
+                                <span class="pillar-time">04:00–05:00</span>
+                            </div>
+                            <p class="pillar-desc">Membaca literatur berat</p>
+                            <div class="pillar-input">
+                                <input type="number" id="cognitive-pages" min="0" placeholder="Jumlah halaman"
+                                    value="0">
+                                <span>halaman</span>
+                            </div>
+                        </div>
+                        <div class="pillar-card">
+                            <div class="pillar-header">
+                                <span class="pillar-icon">💪</span>
+                                <h4>Physical Endurance</h4>
+                                <span class="pillar-time">15:00–16:00</span>
+                            </div>
+                            <p class="pillar-desc">Latihan fisik</p>
+                            <div class="pillar-toggle">
+                                <button type="button" class="toggle-btn active" data-pillar="physical"
+                                    data-value="no">Tidak</button>
+                                <button type="button" class="toggle-btn" data-pillar="physical"
+                                    data-value="yes">Ya</button>
+                            </div>
+                        </div>
+                        <div class="pillar-card">
+                            <div class="pillar-header">
+                                <span class="pillar-icon">🧠</span>
+                                <h4>Intellectual Execution</h4>
+                                <span class="pillar-time">18:30–20:00</span>
+                            </div>
+                            <p class="pillar-desc">Belajar struktural</p>
+                            <div class="pillar-toggle">
+                                <button type="button" class="toggle-btn active" data-pillar="intellectual"
+                                    data-value="no">Tidak</button>
+                                <button type="button" class="toggle-btn" data-pillar="intellectual"
+                                    data-value="yes">Ya</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-save" id="save-discipline-btn">Simpan Log Hari Ini</button>
+                </div>
+                <div class="today-status" id="today-status-card"></div>
+            </section>
+
+            <!-- Log Disiplin (quick view) -->
+            <section id="view-discipline-log" class="view">
+                <div class="view-header">
+                    <h2>Log Disiplin</h2>
+                    <p class="subtitle">Input dan evaluasi harian</p>
+                </div>
+                <div class="date-selector-log">
+                    <label>Tanggal:</label>
+                    <input type="date" id="log-date" />
+                    <button class="btn btn-icon" id="load-log-btn">Muat</button>
+                </div>
+                <div id="discipline-log-content"></div>
+            </section>
+
+            <!-- Ruang Interogasi -->
+            <section id="view-interrogation" class="view">
+                <div class="view-header">
+                    <h2>Ruang Interogasi</h2>
+                    <p class="subtitle">Wajib diisi saat status hari Gagal · Tidak ada kolom alasan bebas</p>
+                </div>
+                <div class="interrogation-date-select" id="interrogation-date-select"></div>
+                <div class="interrogation-form" id="interrogation-form">
+                    <div class="interrogation-section">
+                        <h4>Sebab Eksternal (pilih satu)</h4>
+                        <div class="interrogation-options">
+                            <label class="interrogation-option"><input type="radio" name="cause" value="distraksi">
+                                Distraksi lingkungan</label>
+                            <label class="interrogation-option"><input type="radio" name="cause" value="manajemen">
+                                Manajemen waktu buruk</label>
+                            <label class="interrogation-option"><input type="radio" name="cause" value="gangguan">
+                                Gangguan sosial</label>
+                            <label class="interrogation-option"><input type="radio" name="cause" value="kelelahan">
+                                Kelelahan fisik</label>
+                        </div>
+                    </div>
+                    <div class="interrogation-section">
+                        <h4>Solusi Struktural (pilih satu)</h4>
+                        <div class="interrogation-options">
+                            <label class="interrogation-option"><input type="radio" name="solution" value="lokasi"> Ubah
+                                lokasi belajar</label>
+                            <label class="interrogation-option"><input type="radio" name="solution" value="notifikasi">
+                                Matikan notifikasi</label>
+                            <label class="interrogation-option"><input type="radio" name="solution" value="jadwal">
+                                Perbaiki jadwal</label>
+                            <label class="interrogation-option"><input type="radio" name="solution" value="tidur">
+                                Disiplin tidur</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="save-interrogation-btn">Simpan Analisis</button>
+                </div>
+                <div class="interrogation-result" id="interrogation-result"></div>
+            </section>
+
+            <!-- Grafik -->
+            <section id="view-charts" class="view">
+                <div class="view-header">
+                    <h2>Grafik Disiplin</h2>
+                    <p class="subtitle">Visualisasi performa disiplin</p>
+                </div>
+                <div class="chart-section">
+                    <h4>Grafik Harian (7 hari terakhir)</h4>
+                    <div class="chart-bar-container" id="chart-daily"></div>
+                </div>
+                <div class="chart-section">
+                    <h4>Grafik Mingguan (4 minggu terakhir)</h4>
+                    <div class="chart-bar-container" id="chart-weekly"></div>
+                </div>
+            </section>
+
+            <!-- Histori -->
+            <section id="view-history" class="view">
+                <div class="view-header">
+                    <h2>Histori Disiplin</h2>
+                    <p class="subtitle">Riwayat lengkap dengan opsi hapus per hari</p>
+                </div>
+                <div class="history-controls">
+                    <input type="date" id="history-filter-date" />
+                    <button class="btn btn-icon" id="filter-history-btn">Filter</button>
+                    <button class="btn btn-icon" id="clear-history-filter">Reset</button>
+                </div>
+                <div id="history-list"></div>
+            </section>
+
+            <!-- PART 2 · v11–v20 Analisis Disiplin -->
+            <section id="view-part2" class="view">
+                <div class="view-header">
+                    <h2>Bagian 2 · Sistem Analisis Disiplin (v11–v20)</h2>
+                    <p class="subtitle">Behavioral Energy, Habit Builder, Arsenal, Focus Lock, Authority Level</p>
+                </div>
+                <div class="part-tabs" id="part2-tabs"></div>
+                <div class="part-content" id="part2-content"></div>
+            </section>
+
+            <!-- PART 3 · v21–v30 Koreksi Struktur -->
+            <section id="view-part3" class="view">
+                <div class="view-header">
+                    <h2>Bagian 3 · Sistem Koreksi Struktur (v21–v30)</h2>
+                    <p class="subtitle">Habit Failure Detector, War Room, Decision Logger, Achievement, Life Campaign
+                    </p>
+                </div>
+                <div class="part-tabs" id="part3-tabs"></div>
+                <div class="part-content" id="part3-content"></div>
+            </section>
+
+            <!-- PART 4 · v31–v40 Pengembangan Kapasitas -->
+            <section id="view-part4" class="view">
+                <div class="view-header">
+                    <h2>Bagian 4 · Sistem Pengembangan Kapasitas (v31–v40)</h2>
+                    <p class="subtitle">Skill Conquest, Routine Generator, Risk Analyzer, Immutable Log, Doctrine</p>
+                </div>
+                <div class="part-tabs" id="part4-tabs"></div>
+                <div class="part-content" id="part4-content"></div>
+            </section>
+
+            <!-- PART 5 · v41–v50 Strategi Kehidupan -->
+            <section id="view-part5" class="view">
+                <div class="view-header">
+                    <h2>Bagian 5 · Sistem Strategi Kehidupan (v41–v50)</h2>
+                    <p class="subtitle">Vision Engine, AI Assistant, Power Index, Life Control, Matter Omega</p>
+                </div>
+                <div class="part-tabs" id="part5-tabs"></div>
+                <div class="part-content" id="part5-content"></div>
+            </section>
+
+            <!-- PART 6 · v51–v60 Prediksi Masa Depan -->
+            <section id="view-part6" class="view">
+                <div class="view-header">
+                    <h2>Bagian 6 · Sistem Prediksi Masa Depan (v51–v60)</h2>
+                    <p class="subtitle">Future Behavior Predictor, Life Trajectory, Momentum Engine, Discipline Forecast
+                    </p>
+                </div>
+                <div class="part-tabs" id="part6-tabs"></div>
+                <div class="part-content" id="part6-content"></div>
+            </section>
+
+            <!-- PART 7 · v61–v70 Ekspansi Kapasitas Manusia -->
+            <section id="view-part7" class="view">
+                <div class="view-header">
+                    <h2>Bagian 7 · Sistem Ekspansi Kapasitas Manusia (v61–v70)</h2>
+                    <p class="subtitle">Cognitive Expansion, Learning Engine, Deep Work, Intellectual Dominance</p>
+                </div>
+                <div class="part-tabs" id="part7-tabs"></div>
+                <div class="part-content" id="part7-content"></div>
+            </section>
+
+            <!-- PART 8 · v71–v80 Optimalisasi Kehidupan -->
+            <section id="view-part8" class="view">
+                <div class="view-header">
+                    <h2>Bagian 8 · Sistem Optimalisasi Kehidupan (v71–v80)</h2>
+                    <p class="subtitle">Life Architecture, Resource Manager, Goal Conquest, Life Performance Index</p>
+                </div>
+                <div class="part-tabs" id="part8-tabs"></div>
+                <div class="part-content" id="part8-content"></div>
+            </section>
+
+            <!-- PART 9 · v81–v90 Kepemimpinan Pribadi -->
+            <section id="view-part9" class="view">
+                <div class="view-header">
+                    <h2>Bagian 9 · Sistem Kepemimpinan Pribadi (v81–v90)</h2>
+                    <p class="subtitle">Leadership Engine, Strategic Communication, Elite Leadership Dashboard</p>
+                </div>
+                <div class="part-tabs" id="part9-tabs"></div>
+                <div class="part-content" id="part9-content"></div>
+            </section>
+
+            <!-- PART 10 · v91–v100 Final Omega -->
+            <section id="view-part10" class="view">
+                <div class="view-header">
+                    <h2>Bagian 10 · Matter System Final Omega v100</h2>
+                    <p class="subtitle">Personal Strategic Life Operating System · Integrasi Penuh Semua Modul</p>
+                </div>
+                <div class="part-tabs" id="part10-tabs"></div>
+                <div class="part-content" id="part10-content"></div>
+            </section>
+                <!-- Economy -->
+                <section id="view-economy" class="view">
+                    <div class="view-header">
+                        <h2>Economy & Budget Tracker</h2>
+                        <p class="subtitle">Manajemen finansial dan alokasi sumber daya</p>
+                    </div>
+                    
+                    <div class="economy-dashboard">
+                        <div class="economy-balance-card">
+                            <h3>Total Balance</h3>
+                            <div class="balance-amount" id="economy-total-balance">Rp 0</div>
+                            <div class="balance-stats">
+                                <div class="stat income">
+                                    <span>Income</span>
+                                    <strong id="economy-total-income">Rp 0</strong>
+                                </div>
+                                <div class="stat expense">
+                                    <span>Expense</span>
+                                    <strong id="economy-total-expense">Rp 0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="eco-grid">
+                        <div class="module-panel">
+                            <h4>Input Transaksi</h4>
+                            <div class="form-row">
+                                <input type="number" id="eco-amount" placeholder="Nominal (Rp)" style="flex:1">
+                                <select id="eco-type" style="width:120px">
+                                    <option value="expense">Pengeluaran</option>
+                                    <option value="income">Pemasukan</option>
+                                </select>
+                            </div>
+                            <input type="text" id="eco-category" placeholder="Kategori (Makan, Gaji, dll)" style="width:100%; margin-bottom:12px">
+                            <input type="text" id="eco-desc" placeholder="Keterangan opsional" style="width:100%; margin-bottom:12px">
+                            <button class="btn btn-primary" id="add-transaction-btn">Catat Transaksi</button>
+                        </div>
+
+                        <div class="module-panel">
+                            <h4>Grafik Arus Kas (7 Hari Terakhir)</h4>
+                            <div class="chart-bar-container" id="eco-chart"></div>
+                        </div>
+                    </div>
+
+                    <div class="module-panel" style="margin-top:20px;">
+                        <h4>Histori Transaksi</h4>
+                        <div id="eco-history-list"></div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <div id="toast" class="toast"></div>
+        <script src="app.js"></script>
+    </body>
+
+    </html>
