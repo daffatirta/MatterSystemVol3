@@ -157,7 +157,7 @@ const AUTHORITY_LEVELS = [
 let state = {
     disciplineLog: {},
     selectedDate: null,
-    todayPillarValues: { cognitive: 0, physical: 'yes', intellectual: 'yes' },
+    todayPillarValues: { wakeup: 'no', cognitiveRead: 'no', boxing: 'no', intellectual: 'no' },
     part2Tab: 'energy',
     part3Tab: 'failure',
     part4Tab: 'skills',
@@ -183,7 +183,8 @@ let state = {
     identity: [],
     empire: [],
     immutableLog: [],
-    economy: []
+    pockets: { operasional: 0, eksplorasi: 0, kapasitas: 0 },
+    journals: []
 };
 
 // ========== Utility ==========
@@ -232,10 +233,24 @@ function getWeekStart(d) {
 // ========== Core Logic ==========
 function evaluateDay(entry) {
     if (!entry) return null;
-    const cognitiveOk = (entry.cognitive || 0) > 0;
-    const physicalOk = entry.physical === 'yes';
-    const intellectualOk = entry.intellectual === 'yes';
-    return cognitiveOk && physicalOk && intellectualOk ? 'success' : 'failed';
+    let score = 0;
+    if (entry.wakeup === 'yes') score++;
+    if (entry.cognitiveRead === 'yes') score++;
+    if (entry.boxing === 'yes') score++;
+    if (entry.intellectual === 'yes') score++;
+
+    // Total 4 pillars. >= 3 is success (75%)
+    return score >= 3 ? 'success' : 'failed';
+}
+
+function getHabitScore(entry) {
+    if (!entry) return 0;
+    let score = 0;
+    if (entry.wakeup === 'yes') score++;
+    if (entry.cognitiveRead === 'yes') score++;
+    if (entry.boxing === 'yes') score++;
+    if (entry.intellectual === 'yes') score++;
+    return score;
 }
 
 function getWeeklySuccessRate(weeksBack = 0) {
@@ -266,13 +281,17 @@ function getAuthorityStatus() {
 
 // ========== Save / Load ==========
 function saveDisciplineLog() {
-    const cognitive = parseInt(document.getElementById('cognitive-pages').value, 10) || 0;
-    const physical = document.querySelector('[data-pillar="physical"].active')?.dataset?.value || 'no';
+    const cognitivePages = parseInt(document.getElementById('cognitive-pages').value, 10) || 0;
+    const wakeup = document.querySelector('[data-pillar="wakeup"].active')?.dataset?.value || 'no';
+    const cognitiveRead = document.querySelector('[data-pillar="cognitiveRead"].active')?.dataset?.value || 'no';
+    const boxing = document.querySelector('[data-pillar="boxing"].active')?.dataset?.value || 'no';
     const intellectual = document.querySelector('[data-pillar="intellectual"].active')?.dataset?.value || 'no';
 
     const entry = {
-        cognitive,
-        physical,
+        cognitive: cognitivePages, // keep for indexing
+        wakeup,
+        cognitiveRead,
+        boxing,
         intellectual,
         status: null,
         interrogation: null
@@ -284,26 +303,28 @@ function saveDisciplineLog() {
     saveToStorage(STORAGE_KEYS.disciplineLog, state.disciplineLog);
 
     if (entry.status === 'failed') {
-        showToast('Status: Gagal. Masuk ke Ruang Interogasi.');
-        switchView('interrogation');
+        showToast('Status: Gagal. Wajib isi Jurnal Dialektis & Ruang Interogasi.');
     } else {
         showToast('Status: Berhasil. Disiplin tersimpan.');
     }
 
     renderDashboard();
     renderCharts();
+    renderEconomyDashboard(); // Re-render to show Causal Badge
+    renderJournal(); // Re-render journal prompt
     updateAuthorityDisplay();
 }
 
 function loadDisciplineForDate(dateStr) {
     const entry = state.disciplineLog[dateStr];
     if (!entry) return;
-    document.getElementById('cognitive-pages').value = entry.cognitive || 0;
-    document.querySelectorAll('[data-pillar="physical"]').forEach(b => {
-        b.classList.toggle('active', b.dataset.value === entry.physical);
-    });
-    document.querySelectorAll('[data-pillar="intellectual"]').forEach(b => {
-        b.classList.toggle('active', b.dataset.value === entry.intellectual);
+    document.getElementById('cognitive-pages').value = entry.cognitive || '';
+
+    const pillars = ['wakeup', 'cognitiveRead', 'boxing', 'intellectual'];
+    pillars.forEach(p => {
+        document.querySelectorAll(`[data-pillar="${p}"]`).forEach(b => {
+            b.classList.toggle('active', b.dataset.value === entry[p]);
+        });
     });
 }
 
@@ -488,13 +509,14 @@ function renderHistory() {
 
     listEl.innerHTML = entries.map(e => {
         const status = evaluateDay(e);
+        const s = getHabitScore(e);
         return `
             <div class="history-item">
                 <div>
                     <strong>${formatDisplayDate(e.date)}</strong>
                     <span class="status-badge ${status}">${status === 'success' ? 'Berhasil' : 'Gagal'}</span>
                     <div style="font-size:0.85rem;color:var(--text-muted);margin-top:4px">
-                        Cognitive: ${e.cognitive || 0} hal · Physical: ${e.physical === 'yes' ? 'Ya' : 'Tidak'} · Intellectual: ${e.intellectual === 'yes' ? 'Ya' : 'Tidak'}
+                        Score: ${s}/4 · Wake: ${e.wakeup === 'yes' ? 'Y' : 'N'} · Read: ${e.cognitiveRead === 'yes' ? 'Y' : 'N'} · Box: ${e.boxing === 'yes' ? 'Y' : 'N'} · Intel: ${e.intellectual === 'yes' ? 'Y' : 'N'}
                     </div>
                     ${e.interrogation ? `<div style="font-size:0.8rem;margin-top:4px">Sebab: ${CAUSE_LABELS[e.interrogation.cause]} → Solusi: ${SOLUTION_LABELS[e.interrogation.solution]}</div>` : ''}
                 </div>
@@ -512,9 +534,11 @@ function renderDashboard() {
     if (entry) {
         loadDisciplineForDate(today);
     } else {
-        document.getElementById('cognitive-pages').value = 0;
-        document.querySelectorAll('[data-pillar="physical"]').forEach((b, i) => b.classList.toggle('active', i === 0));
-        document.querySelectorAll('[data-pillar="intellectual"]').forEach((b, i) => b.classList.toggle('active', i === 0));
+        document.getElementById('cognitive-pages').value = '';
+        const pillars = ['wakeup', 'cognitiveRead', 'boxing', 'intellectual'];
+        pillars.forEach(p => {
+            document.querySelectorAll(`[data-pillar="${p}"]`).forEach((b, i) => b.classList.toggle('active', i === 0));
+        });
     }
 
     const statusCard = document.getElementById('today-status-card');
@@ -525,11 +549,12 @@ function renderDashboard() {
     }
 
     const status = evaluateDay(entry);
+    const score = getHabitScore(entry);
     statusCard.className = `today-status ${status}`;
     statusCard.innerHTML = `
-        <h4>Status Hari Ini: ${status === 'success' ? '✓ Berhasil' : '✗ Gagal'}</h4>
-        <p>Cognitive: ${entry.cognitive || 0} halaman · Physical: ${entry.physical === 'yes' ? 'Ya' : 'Tidak'} · Intellectual: ${entry.intellectual === 'yes' ? 'Ya' : 'Tidak'}</p>
-        ${status === 'failed' && !entry.interrogation ? '<p style="color:var(--danger);margin-top:12px">⚠ Wajib masuk Ruang Interogasi</p>' : ''}
+        <h4>Status Hari Ini: ${status === 'success' ? '✓ Berhasil' : '✗ Gagal'} (${score}/4)</h4>
+        <p>Wake up 04:00: ${entry.wakeup === 'yes' ? 'Ya' : 'Tidak'} · Read: ${entry.cognitiveRead === 'yes' ? 'Ya' : 'Tidak'} · Boxing: ${entry.boxing === 'yes' ? 'Ya' : 'Tidak'} · Intel: ${entry.intellectual === 'yes' ? 'Ya' : 'Tidak'}</p>
+        ${status === 'failed' ? '<p style="color:var(--danger);margin-top:12px">⚠ Habit gagal. Buka Jurnal Harian & Ruang Interogasi, dan terima Pajak Kembalian di Keuangan.</p>' : ''}
     `;
 
     updateAuthorityDisplay();
@@ -1159,23 +1184,145 @@ function renderPart10() {
 }
 
 // ========== Economy ==========
+function getPocketPercentages() {
+    return {
+        operasional: 0.60,
+        eksplorasi: 0.25,
+        kapasitas: 0.15
+    };
+}
+
 function renderEconomyDashboard() {
-    let totalIncome = 0;
-    let totalExpense = 0;
+    document.getElementById('pocket-op-amount').textContent = formatRupiah(state.pockets.operasional);
+    document.getElementById('pocket-ex-amount').textContent = formatRupiah(state.pockets.eksplorasi);
+    document.getElementById('pocket-cap-amount').textContent = formatRupiah(state.pockets.kapasitas);
 
-    state.economy.forEach(t => {
-        if (t.type === 'income') totalIncome += t.amount;
-        if (t.type === 'expense') totalExpense += t.amount;
-    });
+    // Calculate total layout width approximation for generic bars
+    const total = state.pockets.operasional + state.pockets.eksplorasi + state.pockets.kapasitas;
+    const getWidth = (val) => total === 0 ? 0 : Math.min(100, Math.max(5, (val / total) * 100));
 
-    const balance = totalIncome - totalExpense;
+    document.getElementById('pocket-op-bar').style.width = `${getWidth(state.pockets.operasional)}%`;
+    document.getElementById('pocket-ex-bar').style.width = `${getWidth(state.pockets.eksplorasi)}%`;
+    document.getElementById('pocket-cap-bar').style.width = `${getWidth(state.pockets.kapasitas)}%`;
 
-    document.getElementById('economy-total-balance').textContent = formatRupiah(balance);
-    document.getElementById('economy-total-income').textContent = formatRupiah(totalIncome);
-    document.getElementById('economy-total-expense').textContent = formatRupiah(totalExpense);
-
+    renderCausalBadge();
     renderEconomyHistory();
     renderEconomyCharts();
+}
+
+function renderCausalBadge() {
+    const today = getToday();
+    const entry = state.disciplineLog[today];
+    const badgeEl = document.getElementById('eco-causal-badge');
+    if (!badgeEl) return;
+
+    if (!entry) {
+        badgeEl.innerHTML = `<div class="causal-badge">
+            <div>
+                <strong>Node 1 (Habit) Belum Diisi</strong>
+                <div style="font-size:0.85rem; color:var(--text-muted);">Isi Habit Tracker dulu untuk melihat sistem Pajak/Dividen.</div>
+            </div>
+        </div>`;
+        return;
+    }
+
+    const score = getHabitScore(entry);
+    const scorePct = (score / 4) * 100;
+    
+    // Determine applied today
+    const alreadyApplied = state.economy.some(t => t.date === today && (t.type === 'dividen' || t.type === 'pajak'));
+
+    if (scorePct >= 75) {
+        // Success -> Dividen
+        badgeEl.innerHTML = `<div class="causal-badge success-state">
+            <div>
+                <strong>Dividen Aktif</strong>
+                <div style="font-size:0.85rem;">Habit score tinggi (${score}/4). Anda berhak mencairkan dividen Rp10.000 ke Eksplorasi.</div>
+            </div>
+            ${alreadyApplied ? '<span style="color:var(--success); font-weight:bold;">Telah Diambil ✓</span>' : '<button class="btn btn-primary" onclick="applyDividen()" style="background:var(--success)">Cairkan Dividen</button>'}
+        </div>`;
+    } else {
+        // Fail -> Pajak
+        badgeEl.innerHTML = `<div class="causal-badge failed-state">
+            <div>
+                <strong>Pajak Kembalian</strong>
+                <div style="font-size:0.85rem;">Habit berantakan (${score}/4). Sistem memaksa potong Rp10.000 dari Eksplorasi ke Kapasitas.</div>
+            </div>
+            ${alreadyApplied ? '<span style="color:var(--danger); font-weight:bold;">Pajak Dibayar ✓</span>' : '<button class="btn btn-primary" onclick="applyPajak()" style="background:var(--danger)">Bayar Pajak</button>'}
+        </div>`;
+    }
+}
+
+function splitIncome() {
+    const input = document.getElementById('eco-total-amount');
+    const amount = parseInt(input.value, 10);
+    
+    if (!amount || amount <= 0) {
+        showToast('Masukkan nominal valid');
+        return;
+    }
+
+    const pct = getPocketPercentages();
+    const op = Math.floor(amount * pct.operasional);
+    const ex = Math.floor(amount * pct.eksplorasi);
+    const cap = amount - op - ex; // remainder to cap
+
+    state.pockets.operasional += op;
+    state.pockets.eksplorasi += ex;
+    state.pockets.kapasitas += cap;
+
+    state.economy.push({
+        id: Date.now(),
+        type: 'split',
+        total: amount,
+        split: { op, ex, cap },
+        date: getToday(),
+        desc: `Auto-split: ${formatRupiah(amount)}`
+    });
+
+    saveToStorage('matter_pockets', state.pockets);
+    saveToStorage(STORAGE_KEYS.economy, state.economy);
+
+    input.value = '';
+    showToast('Alokasi berhasil!');
+    renderEconomyDashboard();
+    renderJournal(); // Updates prompt potentially
+}
+
+function applyDividen() {
+    state.pockets.eksplorasi += 10000;
+    state.economy.push({
+        id: Date.now(),
+        type: 'dividen',
+        amount: 10000,
+        date: getToday(),
+        desc: 'Dividen Habit: +Rp10k ke Eksplorasi'
+    });
+    saveToStorage('matter_pockets', state.pockets);
+    saveToStorage(STORAGE_KEYS.economy, state.economy);
+    showToast('Dividen berhasil dicairkan');
+    renderEconomyDashboard();
+}
+
+function applyPajak() {
+    if (state.pockets.eksplorasi >= 10000) {
+        state.pockets.eksplorasi -= 10000;
+    } else {
+        state.pockets.eksplorasi = 0; // drain completely if not enough
+    }
+    state.pockets.kapasitas += 10000;
+
+    state.economy.push({
+        id: Date.now(),
+        type: 'pajak',
+        amount: 10000,
+        date: getToday(),
+        desc: 'Pajak Habit Gagal: Pindah Rp10k Eksplorasi → Kapasitas'
+    });
+    saveToStorage('matter_pockets', state.pockets);
+    saveToStorage(STORAGE_KEYS.economy, state.economy);
+    showToast('Pajak telah dibayarkan');
+    renderEconomyDashboard();
 }
 
 function renderEconomyHistory() {
@@ -1186,19 +1333,43 @@ function renderEconomyHistory() {
     }
 
     const sorted = [...state.economy].sort((a, b) => b.id - a.id);
-    listEl.innerHTML = sorted.map(t => `
+    listEl.innerHTML = sorted.map(t => {
+        let colorCls = 'income';
+        let prefix = '+';
+        let amountText = '';
+
+        if (t.type === 'split') {
+            colorCls = 'income';
+            prefix = '';
+            amountText = formatRupiah(t.total);
+        } else if (t.type === 'dividen') {
+            colorCls = 'income';
+            prefix = '+';
+            amountText = formatRupiah(t.amount);
+        } else if (t.type === 'pajak' || t.type === 'expense') {
+            colorCls = 'expense';
+            prefix = '-';
+            amountText = formatRupiah(t.amount);
+        } else {
+             // custom income
+             colorCls = 'income';
+             prefix = '+';
+             amountText = formatRupiah(t.amount);
+        }
+
+        return `
         <div class="transaction-item">
             <div class="transaction-info">
-                <span class="transaction-category">${escapeHtml(t.category)}</span>
-                <span class="transaction-amount ${t.type}">${t.type === 'income' ? '+' : '-'}${formatRupiah(t.amount)}</span>
-                ${t.desc ? `<span class="transaction-desc">${escapeHtml(t.desc)}</span>` : ''}
+                <span class="transaction-category">${t.type === 'split' ? 'Alokasi Pemasukan' : (t.type === 'dividen' ? 'Dividen Habit' : (t.type === 'pajak' ? 'Pajak Kembalian' : escapeHtml(t.category)))}</span>
+                <span class="transaction-amount ${colorCls}">${prefix}${amountText}</span>
+                <span class="transaction-desc">${escapeHtml(t.desc)}</span>
             </div>
             <div class="transaction-right">
-                <span class="transaction-date">${t.date}</span>
-                <button class="delete-btn" onclick="deleteTransaction(${t.id})">Hapus</button>
+                <span class="transaction-date">${formatDisplayDate(t.date).split(' ')[0]}</span>
+                ${(t.type !== 'split' && t.type !== 'dividen' && t.type !== 'pajak') ? `<button class="delete-btn" onclick="deleteTransaction(${t.id})">Hapus</button>` : ''}
             </div>
         </div>
-    `).join('');
+        `}).join('');
 }
 
 function renderEconomyCharts() {
@@ -1207,12 +1378,12 @@ function renderEconomyCharts() {
         const d = new Date();
         d.setDate(d.getDate() - i);
         const ds = formatDate(d);
-        
+
         let inc = 0;
         let exp = 0;
         state.economy.forEach(t => {
             if (t.date === ds) {
-                if (t.type === 'income') inc += t.amount;
+                if (t.type === 'income') inc += t.amount || t.total; // Support split
                 if (t.type === 'expense') exp += t.amount;
             }
         });
@@ -1237,15 +1408,16 @@ function renderEconomyCharts() {
 }
 
 function formatRupiah(num) {
+    if (num === undefined || num === null) return 'Rp 0';
     return 'Rp ' + num.toLocaleString('id-ID');
 }
 
 function addTransaction() {
-    const amtStr = document.getElementById('eco-amount').value;
+    const amtStr = document.getElementById('eco-amount')?.value;
     const amount = parseInt(amtStr, 10);
-    const type = document.getElementById('eco-type').value;
-    const category = document.getElementById('eco-category').value.trim();
-    const desc = document.getElementById('eco-desc').value.trim();
+    const type = document.getElementById('eco-type')?.value;
+    const category = document.getElementById('eco-category')?.value.trim();
+    const desc = document.getElementById('eco-desc')?.value.trim();
 
     if (!amount || amount <= 0 || !category) {
         showToast('Masukkan nominal dan kategori valid');
@@ -1262,7 +1434,7 @@ function addTransaction() {
     });
 
     saveToStorage(STORAGE_KEYS.economy, state.economy);
-    
+
     document.getElementById('eco-amount').value = '';
     document.getElementById('eco-category').value = '';
     document.getElementById('eco-desc').value = '';
@@ -1277,6 +1449,116 @@ function deleteTransaction(id) {
     saveToStorage(STORAGE_KEYS.economy, state.economy);
     renderEconomyDashboard();
     showToast('Transaksi dihapus');
+}
+
+document.addEventListener('click', e => {
+    if (e.target?.id === 'reset-pockets-btn') {
+        if(confirm('Reset semua saldo kantong ke Rp 0? Transaksi histori akan tetap ada.')) {
+            state.pockets = { operasional: 0, eksplorasi: 0, kapasitas: 0 };
+            saveToStorage('matter_pockets', state.pockets);
+            renderEconomyDashboard();
+        }
+    }
+    if (e.target?.id === 'split-income-btn') splitIncome();
+});
+
+// ========== Dialectic Journal (Node 3) ==========
+function renderJournal() {
+    const today = getToday();
+    const entry = state.disciplineLog[today];
+    const container = document.getElementById('journal-prompt-container');
+    const historyList = document.getElementById('journal-history-list');
+    if (!container || !historyList) return;
+
+    // Render History
+    const sortedJournals = [...state.journals].sort((a, b) => b.id - a.id);
+    historyList.innerHTML = sortedJournals.length ? sortedJournals.map(j => `
+        <div class="journal-entry">
+            <div class="journal-date">${formatDisplayDate(j.date)}</div>
+            <p><strong>Refleksi:</strong> ${escapeHtml(j.q1)}</p>
+            <p style="margin-top:8px"><strong>Strategi Besok:</strong> ${escapeHtml(j.q2)}</p>
+        </div>
+        `).join('') : '<p class="empty-state">Belum ada histori jurnal.</p>';
+
+    // Check if filled today
+    if (state.journals.some(j => j.date === today)) {
+        container.innerHTML = `<div style="text-align:center;">
+            <p style="color:var(--success); font-size:1.2rem; font-weight:600; margin-bottom:12px;">✓ Jurnal Hari Ini Terekam</p>
+            <p>Siklus selesai. Implementasikan strategi kamu untuk besok.</p>
+        </div>`;
+        return;
+    }
+
+    if (!entry) {
+        container.innerHTML = '<p class="empty-state">Isi log habit (Node 1) terlebih dahulu untuk melihat prompt jurnal.</p>';
+        return;
+    }
+
+    const score = getHabitScore(entry);
+    const scorePct = (score / 4) * 100;
+    const isSuccess = scorePct >= 75;
+
+    let promptObj = {
+        title: '',
+        text: '',
+        q1: '',
+        q2: 'Apa SOP / perbaikan spesifik untuk strategi Habitmu besok pagi agar dompetmu aman?'
+    };
+
+    if (isSuccess) {
+        promptObj.title = 'Momentum Terjaga';
+        promptObj.text = `Kamu berhasil mempertahankan Habit hari ini (${score}/4). Saldo Eksplorasi-mu menerima dividen perlindungan.`;
+        promptObj.q1 = 'Pola atau mindset apa yang membuatmu berhasil hari ini, dan bagaimana meniru pola ini di hari lain?';
+    } else {
+        const failedPillars = [];
+        if (entry.wakeup === 'no') failedPillars.push('Bangun 04:00');
+        if (entry.cognitiveRead === 'no') failedPillars.push('Baca Buku');
+        if (entry.boxing === 'no') failedPillars.push('Latihan Fisik');
+        if (entry.intellectual === 'no') failedPillars.push('Belajar Struktural');
+        
+        promptObj.title = 'Kegagalan Terdeteksi';
+        promptObj.text = `Hari ini kamu gagal pada ${failedPillars.join(', ')}. Budget 'Playing/Eksplorasi'-mu dipotong Rp10.000.`;
+        promptObj.q1 = 'Apa penyebab eksternal yang jujur dan brutal yang membuatmu gagal eksekusi hari ini?';
+    }
+
+    container.innerHTML = `
+        <div class="journal-prompt-text">
+            <strong>[${promptObj.title}]</strong><br>
+            ${promptObj.text}
+        </div>
+        <div class="journal-form">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <label style="font-weight:500;">1. ${promptObj.q1}</label>
+                <textarea id="journal-q1" placeholder="Tulis analisis aktual..." style="width:100%; min-height:80px; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-secondary); color:var(--text-primary); font-family:inherit;"></textarea>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <label style="font-weight:500;">2. ${promptObj.q2}</label>
+                <textarea id="journal-q2" placeholder="Tulis strategi perbaikan..." style="width:100%; min-height:80px; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-secondary); color:var(--text-primary); font-family:inherit;"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="saveJournal()" style="align-self:flex-start; padding:12px 24px;">Simpan Siklus (Closed Loop)</button>
+        </div>
+        `;
+}
+
+window.saveJournal = function() {
+    const q1 = document.getElementById('journal-q1').value.trim();
+    const q2 = document.getElementById('journal-q2').value.trim();
+    
+    if (!q1 || !q2) {
+        showToast('Isi kedua form refleksi untuk menyelesaikan siklus.');
+        return;
+    }
+
+    state.journals.push({
+        id: Date.now(),
+        date: getToday(),
+        q1,
+        q2
+    });
+
+    saveToStorage('matter_journal', state.journals);
+    showToast('Jurnal tersimpan. Siklus hari ini selesai.');
+    renderJournal();
 }
 
 // ========== Pillar Toggle ==========
@@ -1300,6 +1582,7 @@ function switchView(viewId) {
     if (viewId === 'dashboard') renderDashboard();
     if (viewId === 'charts') renderCharts();
     if (viewId === 'history') renderHistory();
+    if (viewId === 'journal') renderJournal();
     if (viewId === 'interrogation') renderInterrogation();
     if (viewId === 'discipline-log') renderDisciplineLog();
     if (viewId === 'part2') renderPart2();
@@ -1357,8 +1640,10 @@ function init() {
     const v = loadFromStorage(STORAGE_KEYS.vision, '');
     state.vision = typeof v === 'string' ? v : (v || '');
     state.identity = loadFromStorage('matter_identity', []);
-    state.empire = loadFromStorage('matter_empire', []);
     state.economy = loadFromStorage(STORAGE_KEYS.economy, []);
+    state.pockets = loadFromStorage('matter_pockets', { operasional: 0, eksplorasi: 0, kapasitas: 0 });
+    state.journals = loadFromStorage('matter_journal', []);
+    
     initTheme();
     initNavigation();
     initPillarToggles();
@@ -1378,6 +1663,8 @@ function init() {
     renderInterrogation();
     renderDisciplineLog();
     renderModulesRoadmap();
+    renderEconomyDashboard();
+    renderJournal();
 }
 
 init();
