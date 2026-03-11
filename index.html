@@ -92,11 +92,11 @@
                 <button class="nav-item" data-view="part10">
                     <span class="nav-icon">Ω</span>
                     Final Omega
-                <div class="nav-section">ECONOMY</div>
-                <button class="nav-item" data-view="economy">
-                    <span class="nav-icon">💰</span>
-                    Keuangan
-                </button>
+                    <div class="nav-section">ECONOMY</div>
+                    <button class="nav-item" data-view="economy">
+                        <span class="nav-icon">💰</span>
+                        Keuangan
+                    </button>
             </nav>
             <div class="sidebar-footer">
                 <div class="authority-status" id="authority-status">—</div>
@@ -127,8 +127,10 @@
                             </div>
                             <p class="pillar-desc">Bangun pagi untuk keunggulan waktu</p>
                             <div class="pillar-toggle">
-                                <button type="button" class="toggle-btn active" data-pillar="wakeup" data-value="no">Tidak</button>
-                                <button type="button" class="toggle-btn" data-pillar="wakeup" data-value="yes">Ya</button>
+                                <button type="button" class="toggle-btn active" data-pillar="wakeup"
+                                    data-value="no">Tidak</button>
+                                <button type="button" class="toggle-btn" data-pillar="wakeup"
+                                    data-value="yes">Ya</button>
                             </div>
                         </div>
                         <div class="pillar-card">
@@ -138,12 +140,15 @@
                             </div>
                             <p class="pillar-desc">Membaca literatur berat</p>
                             <div class="pillar-toggle">
-                                <button type="button" class="toggle-btn active" data-pillar="cognitiveRead" data-value="no">Tidak</button>
-                                <button type="button" class="toggle-btn" data-pillar="cognitiveRead" data-value="yes">Ya</button>
+                                <button type="button" class="toggle-btn active" data-pillar="cognitiveRead"
+                                    data-value="no">Tidak</button>
+                                <button type="button" class="toggle-btn" data-pillar="cognitiveRead"
+                                    data-value="yes">Ya</button>
                             </div>
                             <!-- Optional pages input directly below if they select yes, but default is just the toggle -->
                             <div class="pillar-input" style="margin-top: 10px;">
-                                <input type="number" id="cognitive-pages" min="0" placeholder="Hal" value="" style="width:100%; font-size: 0.8rem;">
+                                <input type="number" id="cognitive-pages" min="0" placeholder="Hal" value=""
+                                    style="width:100%; font-size: 0.8rem;">
                             </div>
                         </div>
                         <div class="pillar-card">
@@ -153,8 +158,10 @@
                             </div>
                             <p class="pillar-desc">Latihan fisik intens</p>
                             <div class="pillar-toggle">
-                                <button type="button" class="toggle-btn active" data-pillar="boxing" data-value="no">Tidak</button>
-                                <button type="button" class="toggle-btn" data-pillar="boxing" data-value="yes">Ya</button>
+                                <button type="button" class="toggle-btn active" data-pillar="boxing"
+                                    data-value="no">Tidak</button>
+                                <button type="button" class="toggle-btn" data-pillar="boxing"
+                                    data-value="yes">Ya</button>
                             </div>
                         </div>
                         <div class="pillar-card">
@@ -164,12 +171,15 @@
                             </div>
                             <p class="pillar-desc">Belajar struktural</p>
                             <div class="pillar-toggle">
-                                <button type="button" class="toggle-btn active" data-pillar="intellectual" data-value="no">Tidak</button>
-                                <button type="button" class="toggle-btn" data-pillar="intellectual" data-value="yes">Ya</button>
+                                <button type="button" class="toggle-btn active" data-pillar="intellectual"
+                                    data-value="no">Tidak</button>
+                                <button type="button" class="toggle-btn" data-pillar="intellectual"
+                                    data-value="yes">Ya</button>
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-primary btn-save" id="save-discipline-btn">Simpan Log Hari Ini (1-Click)</button>
+                    <button class="btn btn-primary btn-save" id="save-discipline-btn">Simpan Log Hari Ini
+                        (1-Click)</button>
                 </div>
                 <div class="today-status" id="today-status-card"></div>
             </section>
@@ -360,99 +370,106 @@
                 <div class="part-tabs" id="part10-tabs"></div>
                 <div class="part-content" id="part10-content"></div>
             </section>
-                <!-- Economy -->
-                <section id="view-economy" class="view">
-                    <div class="view-header">
-                        <h2>Sistem Finansial Kausalitas (Node 2)</h2>
-                        <p class="subtitle">Otomatisasi 60-25-15 + Skema Pajak & Dividen Habit</p>
+            <!-- Economy -->
+            <section id="view-economy" class="view">
+                <div class="view-header">
+                    <h2>Sistem Finansial Kausalitas (Node 2)</h2>
+                    <p class="subtitle">Otomatisasi 60-25-15 + Skema Pajak & Dividen Habit</p>
+                </div>
+
+                <div class="causal-badge-container" id="eco-causal-badge"></div>
+
+                <!-- Total Balance Output for legacy user request -->
+                <div class="economy-summary-cards" style="display:flex; gap:12px; margin-bottom:24px;">
+                    <div class="pocket-card" style="flex:1;">
+                        <h4 style="font-size:0.85rem; color:var(--text-muted);">Total Balance</h4>
+                        <div class="pocket-amount" id="economy-total-balance">Rp 0</div>
                     </div>
-
-                    <div class="causal-badge-container" id="eco-causal-badge"></div>
-
-                    <!-- Total Balance Output for legacy user request -->
-                    <div class="economy-summary-cards" style="display:flex; gap:12px; margin-bottom:24px;">
-                        <div class="pocket-card" style="flex:1;">
-                            <h4 style="font-size:0.85rem; color:var(--text-muted);">Total Balance</h4>
-                            <div class="pocket-amount" id="economy-total-balance">Rp 0</div>
-                        </div>
-                        <div class="pocket-card" style="flex:1;">
-                            <h4 style="font-size:0.85rem; color:var(--text-muted);">Total In / Out</h4>
-                            <div style="font-size:0.9rem; margin-top:4px;">
-                                <span style="color:var(--success)" id="economy-total-income">Rp 0</span> / 
-                                <span style="color:var(--danger)" id="economy-total-expense">Rp 0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="module-panel" style="margin-bottom: 24px;">
-                        <h4>Input Sintesis (Auto-Split 60-25-15)</h4>
-                        <p class="subtitle" style="margin-bottom:12px">Beban kognitif nol. Biarkan algoritma menghitung.</p>
-                        <div class="form-row">
-                            <input type="number" id="eco-total-amount" placeholder="Total Pemasukan (Rp)" style="flex:1; font-size: 1.2rem; padding: 12px;">
-                            <button class="btn btn-primary" id="split-income-btn" style="padding: 12px 24px;">Alokasikan</button>
+                    <div class="pocket-card" style="flex:1;">
+                        <h4 style="font-size:0.85rem; color:var(--text-muted);">Total In / Out</h4>
+                        <div style="font-size:0.9rem; margin-top:4px;">
+                            <span style="color:var(--success)" id="economy-total-income">Rp 0</span> /
+                            <span style="color:var(--danger)" id="economy-total-expense">Rp 0</span>
                         </div>
                     </div>
+                </div>
 
-                    <div class="pockets-container" id="pockets-display">
-                        <div class="pocket-card">
-                            <h4>Operasional <span style="font-size: 0.8rem; opacity:0.7">(60%)</span></h4>
-                            <div class="pocket-amount" id="pocket-op-amount">Rp 0</div>
-                            <div class="pocket-bar-track">
-                                <div class="pocket-bar-fill" id="pocket-op-bar" style="width: 0%; background: var(--success);"></div>
-                            </div>
-                        </div>
-                        <div class="pocket-card">
-                            <h4>Eksplorasi (Playing) <span style="font-size: 0.8rem; opacity:0.7">(25%)</span></h4>
-                            <div class="pocket-amount" id="pocket-ex-amount">Rp 0</div>
-                            <div class="pocket-bar-track">
-                                <div class="pocket-bar-fill" id="pocket-ex-bar" style="width: 0%; background: var(--warning);"></div>
-                            </div>
-                        </div>
-                        <div class="pocket-card">
-                            <h4>Kapasitas (Saving) <span style="font-size: 0.8rem; opacity:0.7">(15%)</span></h4>
-                            <div class="pocket-amount" id="pocket-cap-amount">Rp 0</div>
-                            <div class="pocket-bar-track">
-                                <div class="pocket-bar-fill" id="pocket-cap-bar" style="width: 0%; background: var(--accent);"></div>
-                            </div>
+                <div class="module-panel" style="margin-bottom: 24px;">
+                    <h4>Input Sintesis (Auto-Split 60-25-15)</h4>
+                    <p class="subtitle" style="margin-bottom:12px">Beban kognitif nol. Biarkan algoritma menghitung.</p>
+                    <div class="form-row">
+                        <input type="number" id="eco-total-amount" placeholder="Total Pemasukan (Rp)"
+                            style="flex:1; font-size: 1.2rem; padding: 12px;">
+                        <button class="btn btn-primary" id="split-income-btn"
+                            style="padding: 12px 24px;">Alokasikan</button>
+                    </div>
+                </div>
+
+                <div class="pockets-container" id="pockets-display">
+                    <div class="pocket-card">
+                        <h4>Operasional <span style="font-size: 0.8rem; opacity:0.7">(60%)</span></h4>
+                        <div class="pocket-amount" id="pocket-op-amount">Rp 0</div>
+                        <div class="pocket-bar-track">
+                            <div class="pocket-bar-fill" id="pocket-op-bar"
+                                style="width: 0%; background: var(--success);"></div>
                         </div>
                     </div>
-
-                    <div class="module-panel" style="margin-top:24px;">
-                        <h4>Input Transaksi Manual</h4>
-                        <div class="form-row" style="margin-top:12px">
-                            <input type="number" id="eco-amount" placeholder="Nominal (Rp)" style="flex:1;">
-                            <select id="eco-type" style="width:120px;">
-                                <option value="income">Masuk (+)</option>
-                                <option value="expense">Keluar (-)</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <input type="text" id="eco-category" placeholder="Kategori (Makan, Bensin, Gaji)" style="flex:1;">
-                        </div>
-                        <div class="form-row">
-                            <input type="text" id="eco-desc" placeholder="Catatan Opsional..." style="flex:2;">
-                            <button class="btn btn-primary" id="add-transaction-btn">Catat</button>
+                    <div class="pocket-card">
+                        <h4>Eksplorasi (Playing) <span style="font-size: 0.8rem; opacity:0.7">(25%)</span></h4>
+                        <div class="pocket-amount" id="pocket-ex-amount">Rp 0</div>
+                        <div class="pocket-bar-track">
+                            <div class="pocket-bar-fill" id="pocket-ex-bar"
+                                style="width: 0%; background: var(--warning);"></div>
                         </div>
                     </div>
-
-                    <div class="module-panel" style="margin-top:24px;">
-                        <h4>Arus Kas Mingguan (Manual)</h4>
-                        <div class="chart-container" id="eco-chart"></div>
+                    <div class="pocket-card">
+                        <h4>Kapasitas (Saving) <span style="font-size: 0.8rem; opacity:0.7">(15%)</span></h4>
+                        <div class="pocket-amount" id="pocket-cap-amount">Rp 0</div>
+                        <div class="pocket-bar-track">
+                            <div class="pocket-bar-fill" id="pocket-cap-bar"
+                                style="width: 0%; background: var(--accent);"></div>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="module-panel" style="margin-top:24px;">
-                        <h4 style="display:flex; justify-content:space-between; align-items:center;">
-                            Histori Transaksi Node 2
-                            <button class="btn btn-icon" id="reset-pockets-btn" style="font-size:0.8rem; padding:4px 8px;">Reset Kantong</button>
-                        </h4>
-                        <div id="eco-history-list" style="max-height: 300px; overflow-y:auto; margin-top:12px;"></div>
+                <div class="module-panel" style="margin-top:24px;">
+                    <h4>Input Transaksi Manual</h4>
+                    <div class="form-row" style="margin-top:12px">
+                        <input type="number" id="eco-amount" placeholder="Nominal (Rp)" style="flex:1;">
+                        <select id="eco-type" style="width:120px;">
+                            <option value="income">Masuk (+)</option>
+                            <option value="expense">Keluar (-)</option>
+                        </select>
                     </div>
-                </section>
-            </main>
-        </div>
+                    <div class="form-row">
+                        <input type="text" id="eco-category" placeholder="Kategori (Makan, Bensin, Gaji)"
+                            style="flex:1;">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="eco-desc" placeholder="Catatan Opsional..." style="flex:2;">
+                        <button class="btn btn-primary" id="add-transaction-btn">Catat</button>
+                    </div>
+                </div>
 
-        <div id="toast" class="toast"></div>
-        <script src="app.js"></script>
-    </body>
+                <div class="module-panel" style="margin-top:24px;">
+                    <h4>Arus Kas Mingguan (Manual)</h4>
+                    <div class="chart-container" id="eco-chart"></div>
+                </div>
 
-    </html>
+                <div class="module-panel" style="margin-top:24px;">
+                    <h4 style="display:flex; justify-content:space-between; align-items:center;">
+                        Histori Transaksi Node 2
+                        <button class="btn btn-icon" id="reset-pockets-btn"
+                            style="font-size:0.8rem; padding:4px 8px;">Reset Kantong</button>
+                    </h4>
+                    <div id="eco-history-list" style="max-height: 300px; overflow-y:auto; margin-top:12px;"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="app.js"></script>
+</body>
+
+</html>

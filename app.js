@@ -1228,7 +1228,7 @@ function renderCausalBadge() {
 
     const score = getHabitScore(entry);
     const scorePct = (score / 4) * 100;
-    
+
     // Determine applied today
     const alreadyApplied = state.economy.some(t => t.date === today && (t.type === 'dividen' || t.type === 'pajak'));
 
@@ -1256,7 +1256,7 @@ function renderCausalBadge() {
 function splitIncome() {
     const input = document.getElementById('eco-total-amount');
     const amount = parseInt(input.value, 10);
-    
+
     if (!amount || amount <= 0) {
         showToast('Masukkan nominal valid');
         return;
@@ -1351,10 +1351,10 @@ function renderEconomyHistory() {
             prefix = '-';
             amountText = formatRupiah(t.amount);
         } else {
-             // custom income
-             colorCls = 'income';
-             prefix = '+';
-             amountText = formatRupiah(t.amount);
+            // custom income
+            colorCls = 'income';
+            prefix = '+';
+            amountText = formatRupiah(t.amount);
         }
 
         return `
@@ -1453,7 +1453,7 @@ function deleteTransaction(id) {
 
 document.addEventListener('click', e => {
     if (e.target?.id === 'reset-pockets-btn') {
-        if(confirm('Reset semua saldo kantong ke Rp 0? Transaksi histori akan tetap ada.')) {
+        if (confirm('Reset semua saldo kantong ke Rp 0? Transaksi histori akan tetap ada.')) {
             state.pockets = { operasional: 0, eksplorasi: 0, kapasitas: 0 };
             saveToStorage('matter_pockets', state.pockets);
             renderEconomyDashboard();
@@ -1515,7 +1515,7 @@ function renderJournal() {
         if (entry.cognitiveRead === 'no') failedPillars.push('Baca Buku');
         if (entry.boxing === 'no') failedPillars.push('Latihan Fisik');
         if (entry.intellectual === 'no') failedPillars.push('Belajar Struktural');
-        
+
         promptObj.title = 'Kegagalan Terdeteksi';
         promptObj.text = `Hari ini kamu gagal pada ${failedPillars.join(', ')}. Budget 'Playing/Eksplorasi'-mu dipotong Rp10.000.`;
         promptObj.q1 = 'Apa penyebab eksternal yang jujur dan brutal yang membuatmu gagal eksekusi hari ini?';
@@ -1540,10 +1540,10 @@ function renderJournal() {
         `;
 }
 
-window.saveJournal = function() {
+window.saveJournal = function () {
     const q1 = document.getElementById('journal-q1').value.trim();
     const q2 = document.getElementById('journal-q2').value.trim();
-    
+
     if (!q1 || !q2) {
         showToast('Isi kedua form refleksi untuk menyelesaikan siklus.');
         return;
@@ -1643,7 +1643,7 @@ function init() {
     state.economy = loadFromStorage(STORAGE_KEYS.economy, []);
     state.pockets = loadFromStorage('matter_pockets', { operasional: 0, eksplorasi: 0, kapasitas: 0 });
     state.journals = loadFromStorage('matter_journal', []);
-    
+
     initTheme();
     initNavigation();
     initPillarToggles();
